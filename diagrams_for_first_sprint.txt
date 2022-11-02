@@ -1,0 +1,11 @@
+Typically, the types of diagrams used in ARQSI to architecturally
+represent the software according to the 4+1 model:
+* Logical view: component diagram, and class diagrams are also used to
+represent the domain (domain model).
+* Process/behavior view: sequence diagrams. In other cases, they can be
+used for activity, status, ...
+* Implementation view: package diagrams. In other cases component
+diagrams can also be used.
+* Physical view: node diagram.
+* Scenario view: Use case diagram, but system sequence diagrams may be
+applicable (these are also level 1 process view diagrams).
