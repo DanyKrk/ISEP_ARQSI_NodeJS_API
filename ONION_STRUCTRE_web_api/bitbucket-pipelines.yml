@@ -1,0 +1,11 @@
+image: node:14.18.0
+pipelines:
+  default:
+    - step:
+        script:
+          - cd Posts
+          - npm install
+          - CI=false npm run build
+
+        caches:
+         - node
