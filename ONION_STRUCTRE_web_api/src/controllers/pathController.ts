@@ -32,35 +32,37 @@ export default class PathController implements IPathController /* TODO: extends 
   };
 
   public async updatePath(req: Request, res: Response, next: NextFunction) {
-    try {
-      const pathOrError = await this.pathServiceInstance.updatePath(req.body as IPathDTO) as Result<IPathDTO>;
+    const pathId = req.params.pathId;
 
-      if (pathOrError.isFailure) {
-        return res.status(404).send();
-      }
+    return Path.findById(pathId)
+        .then((path) => {
+            if (path) {
+                path.set(req.body);
 
-      const pathDTO = pathOrError.getValue();
-      return res.status(201).json( pathDTO );
-    }
-    catch (e) {
-      return next(e);
-    }
+                return path
+                    .save()
+                    .then((path) => res.status(201).json({ path }))
+                    .catch((error) => res.status(500).json({ error }));
+            } else {
+                return res.status(404).json({ message: 'not found' });
+            }
+        })
+        .catch((error) => res.status(500).json({ error }));
   };
+
   public async getPathById(req: Request, res: Response, next: NextFunction) {
-    try {
-        let aux = req.url.substring(6,req.url.length);
-  
-        const pathOrError = (await this.pathServiceInstance.getPath(aux)) as Result<IPathDTO>;
-  
-        if (pathOrError.isFailure) {
-          return res.status(402).send();
-        }
-  
-        const pathDTO = pathOrError.getValue();
-        return res.json(pathDTO).status(201);
-      } catch (e) {
-        return next(e);
-      }
+    const pathId = req.params.pathId;
+
+    return Path.findById(pathId)
+        .then((path) => (path ? res.status(200).json({ path }) : res.status(404).json({ message: 'not found' })))
+        .catch((error) => res.status(500).json({ error }));
     }
+
+    public async getPaths(req: Request, res: Response, next: NextFunction) {
+      return Path.find()
+          .then((paths) => res.status(200).json({ paths }))
+          .catch((error) => res.status(500).json({ error }));
+  };
+
   }
 

@@ -28,9 +28,11 @@ export default (app: Router) => {
         (req,res,next) => ctrl.createPath(req,res,next),
     );
     
-    route.get('/:idPath' , (req, res, next) => { ctrl.getPathById(req, res, next); req.params.idPath;})
+    route.get('' , (req, res, next) => { ctrl.getPaths(req, res, next); })
+    
+    route.get('/:pathId' , (req, res, next) => { ctrl.getPathById(req, res, next); })
 
-    route.put('/update',celebrate({
+    route.patch('/update/:pathId',celebrate({
         body: Joi.object({
             departure_warehouse: Joi.string().required(),
             arrival_warehouse: Joi.string().required(),

@@ -27,9 +27,11 @@ export default (app: Router) => {
         (req,res,next) => ctrl.createTruck(req,res,next),
     );
 
-    route.get('/:idTruck' , (req, res, next) => { ctrl.getTruckById(req, res, next);req.params.idTruck})
+    route.get('' , (req, res, next) => { ctrl.getTrucks(req, res, next);})
 
-    route.put('/update',celebrate({
+    route.get('/:truckId' , (req, res, next) => { ctrl.getTruckById(req, res, next); })
+
+    route.patch('/update/:truckId',celebrate({
         body: Joi.object({
             tare: Joi.number().required(),
             load_capacity: Joi.number().required(),

@@ -7,6 +7,7 @@ import ITruckDTO from "../dto/ITruckDTO";
 
 import { Result } from '../core/logic/Result';
 import ITruckController from "./IControllers/ITruckController";
+import Truck from '../persistence/schemas/truckSchema';
 
 
 @Service()
@@ -32,35 +33,35 @@ export default class TruckController implements ITruckController /* TODO: extend
   };
 
   public async updateTruck(req: Request, res: Response, next: NextFunction) {
-    try {
-      const truckOrError = await this.truckServiceInstance.updateTruck(req.body as ITruckDTO) as Result<ITruckDTO>;
+    const truckId = req.params.truckId;
 
-      if (truckOrError.isFailure) {
-        return res.status(404).send();
-      }
+    return Truck.findById(truckId)
+        .then((truck) => {
+            if (truck) {
+                truck.set(req.body);
 
-      const truckDTO = truckOrError.getValue();
-      return res.status(201).json( truckDTO );
-    }
-    catch (e) {
-      return next(e);
-    }
+                return truck
+                    .save()
+                    .then((truck) => res.status(201).json({ truck }))
+                    .catch((error) => res.status(500).json({ error }));
+            } else {
+                return res.status(404).json({ message: 'not found' });
+            }
+        })
+        .catch((error) => res.status(500).json({ error }));
   };
 
   public async getTruckById(req: Request, res: Response, next: NextFunction) {
-    try {
-        let aux = req.url.substring(6,req.url.length);
-  
-        const truckOrError = (await this.truckServiceInstance.getTruck(aux)) as Result<ITruckDTO>;
-  
-        if (truckOrError.isFailure) {
-          return res.status(402).send();
-        }
-  
-        const truckDTO = truckOrError.getValue();
-        return res.json(truckDTO).status(201);
-      } catch (e) {
-        return next(e);
-      }
+    const truckId = req.params.truckId;
+
+    return Truck.findById(truckId)
+        .then((truck) => (truck ? res.status(200).json({ truck }) : res.status(404).json({ message: 'not found' })))
+        .catch((error) => res.status(500).json({ error }));
     }
+
+    public async getTrucks(req: Request, res: Response, next: NextFunction) {
+      return Truck.find()
+          .then((trucks) => res.status(200).json({ trucks }))
+          .catch((error) => res.status(500).json({ error }));
+  };
 }
